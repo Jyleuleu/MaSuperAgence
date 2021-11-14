@@ -44,7 +44,7 @@ class PropertyController extends AbstractController
                 'property.show', 
                 [
                     'id' => $property->getId(),
-                    'slug' =>  $property->getSlug()
+                    'slug' => $property->getSlug()
                 ], 
                 301
             );
