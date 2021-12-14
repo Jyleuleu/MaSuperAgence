@@ -42,6 +42,16 @@ class PropertyRepository extends ServiceEntityRepository
                         ->setParameter('maxPrice', $search->getMaxPrice());
         }
 
+        if ($search->getOptions()->count() > 0) {
+            $key=0;
+            foreach ($search->getOptions() as $option) {
+                $key++;
+                $query = $query
+                            ->andWhere(":option$key MEMBER OF p.options")
+                            ->setParameter("option$key", $option);
+            }
+        }
+
         return $query->orderBy('p.id', 'ASC')->getQuery();
     }
 
