@@ -10,11 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Cocur\Slugify\Slugify;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=PropertyRepository::class)
  * @UniqueEntity("title")
+ * @Vich\Uploadable
  */
 class Property
 {
@@ -32,6 +35,24 @@ class Property
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     * 
+     * @Vich\UploadableField(mapping="property_image", fileNameProperty="filename")
+     * @Assert\Image(
+     *      mimeTypes="image/jpeg"
+     * )
+     * @var File|null
+     */
+    private $imageFile;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * 
+     * @var string|null
+     */
+    private $filename;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -113,6 +134,12 @@ class Property
      * @ORM\ManyToMany(targetEntity=Option::class, inversedBy="properties")
      */
     private $options;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @var datetime|null
+     */
+    private $updated_at;
 
     public function getId(): ?int
     {
@@ -313,6 +340,74 @@ class Property
         if ($this->options->removeElement($option)) {
             $option->removeProperty($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * Get nOTE: This is not a mapped field of entity metadata, just a simple property.
+     *
+     * @return  File|null
+     */ 
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * Set nOTE: This is not a mapped field of entity metadata, just a simple property.
+     *
+     * @param File|UploadedFile|null $imageFile
+     *
+     * @return  self
+     */ 
+    public function setImageFile($imageFile)
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            if($imageFile instanceof UploadedFile) {
+                $this->updated_at = new \DateTime();
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of filename
+     *
+     * @return  string|null
+     */ 
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * Set the value of filename
+     *
+     * @param  string|null  $filename
+     *
+     * @return  self
+     */ 
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }
