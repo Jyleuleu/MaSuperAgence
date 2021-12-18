@@ -30,16 +30,15 @@ class PropertyType extends AbstractType
                 'class' => Option::class,
                 'choice_label' => 'name',
                 'multiple' => true,
-                'required' => false                
+                'required' => false
             ])
             ->add('imageFile', FileType::class, [
-                'required' => false 
+                'required' => false
             ])
             ->add('city')
             ->add('address')
             ->add('postal_code')
-            ->add('sold')
-        ;
+            ->add('sold');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
