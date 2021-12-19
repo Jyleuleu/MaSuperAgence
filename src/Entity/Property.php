@@ -123,6 +123,7 @@ class Property
     public function __construct() {
         $this->created_at = new \DateTimeImmutable();
         $this->options = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     /**
@@ -140,6 +141,11 @@ class Property
      * @var datetime|null
      */
     private $updated_at;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Image::class, mappedBy="property")
+     */
+    private $images;
 
     public function getId(): ?int
     {
@@ -408,6 +414,36 @@ class Property
     public function setUpdatedAt(\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Image[]
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setProperty($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getProperty() === $this) {
+                $image->setProperty(null);
+            }
+        }
 
         return $this;
     }

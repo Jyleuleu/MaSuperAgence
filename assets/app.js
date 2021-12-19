@@ -12,7 +12,9 @@ import './styles/app.scss';
 import './bootstrap';
 
 const $ = require('jquery');
+
 require('bootstrap');
+require('select2');
 
 // create global $ and jQuery variables
 global.$ = global.jQuery = $;
@@ -20,3 +22,11 @@ global.$ = global.jQuery = $;
 // Some scripts to start.
 console.log('Hello Webpack Encore! Edit me in assets/app.js');
 
+$('select').select2();
+
+let $contactButton = $('#contactButton');
+$contactButton.on("click", e => {
+    e.preventDefault();
+    $('#contactForm').slideDown();
+    $contactButton.slideUp();
+})
